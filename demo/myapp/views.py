@@ -1,5 +1,4 @@
-from django.shortcuts import render,HttpResponse,redirect
-# from django.contrib.auth.models import User
+from django.shortcuts import render,HttpResponse,redirect,get_object_or_404
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -10,6 +9,16 @@ from .models import CustomUser
 
 
 
+@api_view(["GET"])
+def get_users(request):
+    users = CustomUser.objects.all().values( "username", "role")
+    return Response(users, status=status.HTTP_200_OK)
+
+@api_view(["DELETE"])
+def delete_user(request, username):
+    user = get_object_or_404(CustomUser, username=username)
+    user.delete()
+    return Response({"message": "User deleted successfully"}, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
 def register(request):
