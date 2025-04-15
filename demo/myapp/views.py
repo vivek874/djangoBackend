@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 import json
 from django.contrib import messages
-from .models import CustomUser
+from .models import CustomUser,Student
+from rest_framework import viewsets
+from .serializers import StudentSerializer
 
 
 
@@ -83,3 +85,7 @@ def create_user_view(request):
             return redirect("create-user")  # Redirect to the same form after creation
 
     return render(request, "create_user.html")
+
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
