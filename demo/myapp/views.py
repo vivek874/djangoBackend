@@ -89,3 +89,16 @@ def create_user_view(request):
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    
+    
+    def get_queryset(self):
+        queryset = Student.objects.all()
+        grade = self.request.query_params.get('grade')
+        section = self.request.query_params.get('section')
+
+        if grade:
+            queryset = queryset.filter(grade=grade)
+        if section:
+            queryset = queryset.filter(section=section)
+
+        return queryset
