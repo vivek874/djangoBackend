@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):  # Inherit from AbstractUser
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     
 class Student(models.Model):
+   
     name = models.CharField(max_length=100)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
@@ -18,4 +19,6 @@ class Student(models.Model):
     attendance = models.FloatField()
     test_score = models.FloatField()
     homework_score = models.FloatField()
-    final_score = models.FloatField()
+    final_exam = models.FloatField()
+    aggregate = models.FloatField()
+    

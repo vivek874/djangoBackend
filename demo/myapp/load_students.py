@@ -17,19 +17,21 @@ def load_students_from_csv(csv_file_path):
         for row in reader:
 
             Student.objects.create(
-                id=int(row['ID']),
-                name=row['Name'], 
-                age=int(row['Age']),
-                gender=row['Gender'],
-                grade=int(row['Grade']),
-                section=row['Section'],
-                attendance=float(row['Attendance (%)']),
-                test_score=float(row['Test Score']),
-                homework_score=float(row['Homework Score']),
-                final_score=float(row['Final Score'])
+               
+                name=row['name'], 
+                age=int(row['age']),
+                gender=row['gender'],
+                grade=int(row['grade']),
+                section=row['section'],
+                attendance=float(row['attendance']),
+                test_score=float(row['test_score']),
+                homework_score=float(row['homework_score']),
+                final_exam=float(row['final_exam']),
+                aggregate = float(row['aggregate']),
+              
             )
     print("Successfully imported student data from:", csv_file_path)
 
 if __name__ == '__main__':
-    csv_path = os.path.expanduser("/Users/vivekdahal/Downloads/sample.csv")  
+    csv_path = os.path.expanduser("/Users/vivekdahal/Downloads/dataset.csv")  
     load_students_from_csv(csv_path)
