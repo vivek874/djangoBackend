@@ -90,15 +90,42 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        attendance_increment = request.data.get("add_attendance")
+
+        if attendance_increment is not None:
+            try:
+                attendance_increment = int(attendance_increment)
+                instance.attendance += attendance_increment
+                instance.save()
+                serializer = self.get_serializer(instance)
+                return Response(serializer.data)
+            except ValueError:
+                return Response({"error": "Invalid attendance increment."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fallback to default behavior for other updates
+        return super().partial_update(request, *args, **kwargs)
+    
     
     def get_queryset(self):
         queryset = Student.objects.all()
         grade = self.request.query_params.get('grade')
         section = self.request.query_params.get('section')
+        test_score=self.request.query_params.get('test_score')
+        homework_score=self.request.query_params.get('homework_score')
+        final_exam=self.request.query_params.get('final_exam')
 
         if grade:
             queryset = queryset.filter(grade=grade)
         if section:
             queryset = queryset.filter(section=section)
+        if test_score :
+             queryset = queryset.filter(test_score=test_score)
+        if homework_score :
+             queryset = queryset.filter(homework_score=homework_score)
+        if final_exam :
+             queryset = queryset.filter(final_exam=final_exam)
+
 
         return queryset
