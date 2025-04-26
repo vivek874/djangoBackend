@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student
+from .models import Student,Subject
 
 # Define a custom ModelAdmin class
 class StudentAdmin(admin.ModelAdmin):
@@ -13,10 +13,10 @@ class StudentAdmin(admin.ModelAdmin):
     search_fields = ('name', 'id')
 
     # Control the order of records
-    ordering = ('name',)  # Orders by name, ascending by default
+    ordering = ('id',)  # Orders by name, ascending by default
 
     # Add pagination (if you have many records)
-    list_per_page = 20
+    list_per_page = 10
 
     # Show editable fields directly in the list view (instead of requiring you to go into the details)
     list_editable = ('age', 'grade', 'section')  # These fields can be edited directly in the list view
@@ -26,3 +26,5 @@ class StudentAdmin(admin.ModelAdmin):
 
 # Register the model with the custom admin
 admin.site.register(Student, StudentAdmin)
+
+admin.site.register(Subject)

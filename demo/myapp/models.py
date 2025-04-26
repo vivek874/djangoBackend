@@ -22,3 +22,24 @@ class Student(models.Model):
     final_exam = models.FloatField()
     aggregate = models.FloatField()
     
+class Subject(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Mark(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="marks")
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    test_score = models.FloatField()
+    homework_score = models.FloatField()
+    final_score = models.FloatField()
+    aggregate = models.FloatField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.aggregate = (self.test_score + self.homework_score + self.final_score) / 3
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.student.name} - {self.subject.name}"
+

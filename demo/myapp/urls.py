@@ -11,6 +11,7 @@ urlpatterns = [
     path("users/", views.get_users, name="get_users"),    #this is to display existing users
     path('delete-user/<str:username>/', views.delete_user, name='delete-user'),  
     path("create-user/", views.create_user_view, name="create-user"),
+    # path('api/assign-mark/', views.assign_mark, name="assign-mark"),
    
 ]
 
