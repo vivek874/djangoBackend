@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'corsheaders',
     "myapp",
+    "django_extensions",
    
 ]
 AUTH_USER_MODEL = "myapp.CustomUser" 

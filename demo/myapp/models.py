@@ -17,10 +17,10 @@ class Student(models.Model):
     grade = models.IntegerField()
     section = models.CharField(max_length=1)  
     attendance = models.FloatField()
-    test_score = models.FloatField()
-    homework_score = models.FloatField()
-    final_exam = models.FloatField()
-    aggregate = models.FloatField()
+    # test_score = models.FloatField()
+    # homework_score = models.FloatField()
+    # final_exam = models.FloatField()
+    final_aggregate = models.FloatField()
     
 class Subject(models.Model):
     name = models.CharField(max_length=100)

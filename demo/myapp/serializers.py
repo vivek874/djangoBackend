@@ -18,7 +18,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ['id', 'name', 'age', 'gender', 'grade', 'section', 'attendance', 'test_score', 'homework_score', 'final_exam', 'aggregate', 'marks']
+        fields = ['id', 'name', 'age', 'gender', 'grade', 'section', 'attendance', 'final_aggregate','marks']
 
     def get_marks(self, obj):
         marks_data = {}
