@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, Mark,Subject
+from .models import Student, Mark,Subject,Homework
 
 class MarkSerializer(serializers.ModelSerializer):
     subject_name = serializers.CharField(source='subject.name', read_only=True)
@@ -32,3 +32,8 @@ class StudentSerializer(serializers.ModelSerializer):
                 'aggregate': mark.aggregate,
             }
         return marks_data
+
+class HomeworkSerializer(serializers.ModelSerializer):
+    class Meta:
+       model = Homework
+       fields = '__all__'

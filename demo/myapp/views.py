@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 import json
 from django.contrib import messages
-from .models import CustomUser,Student,Mark,Subject
+from .models import CustomUser,Student,Mark,Subject,Homework
 from rest_framework import viewsets
-from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer
+from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer,HomeworkSerializer
 
 
 # API to get and delete users in admin page
@@ -128,6 +128,28 @@ def create_user_view(request):
 
     return render(request, "create_user.html")
 
+#api for homework
+@api_view(["POST"])
+def assign_homework(request):
+    title = request.data.get("title")
+    class_name = request.data.get("class_name")
+    section = request.data.get("section")
+    subject = request.data.get("subject")
+    due_date = request.data.get("due_date")  # optional
+
+    if not title or not class_name or not section or not subject:
+        return Response({"error": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    homework = Homework.objects.create(
+        title=title,
+        class_name=class_name,
+        section=section,
+        subject=subject,
+        due_date=due_date
+    )
+    homework.save()
+
+    return Response({"message": "Homework assigned successfully!"}, status=status.HTTP_201_CREATED)
 
 
 #viewsets
@@ -200,3 +222,6 @@ class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
     
+class HomeworkViewSet(viewsets.ModelViewSet):
+    queryset = Homework.objects.all()
+    serializer_class = HomeworkSerializer

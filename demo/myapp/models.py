@@ -43,3 +43,13 @@ class Mark(models.Model):
     def __str__(self):
         return f"{self.student.name} - {self.subject.name}"
 
+class Homework(models.Model):
+       title = models.CharField(max_length=255)
+       grade = models.IntegerField()
+       section= models.CharField(max_length=1)
+       subject = models.CharField(max_length=100)
+       due_date = models.DateField(null=True, blank=True)
+   
+       
+       def __str__(self):
+        return f"{self.title} - {self.class_name}{self.section} ({self.subject})"
