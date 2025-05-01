@@ -10,16 +10,13 @@ class CustomUser(AbstractUser):  # Inherit from AbstractUser
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     
 class Student(models.Model):
-   
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,null=True, blank=True)
     name = models.CharField(max_length=100)
     age = models.IntegerField()
     gender = models.CharField(max_length=10)
     grade = models.IntegerField()
     section = models.CharField(max_length=1)  
     attendance = models.FloatField()
-    # test_score = models.FloatField()
-    # homework_score = models.FloatField()
-    # final_exam = models.FloatField()
     final_aggregate = models.FloatField()
     
 class Subject(models.Model):
@@ -53,3 +50,20 @@ class Homework(models.Model):
        
        def __str__(self):
         return f"{self.title} - {self.class_name}{self.section} ({self.subject})"
+    
+class Teacher(models.Model):
+
+    subject = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.user.get_full_name()
+
+class Leave(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name="leaves")
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message[:50]  # Show first 50 chars in admin
+    
+    

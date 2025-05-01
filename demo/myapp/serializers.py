@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student, Mark,Subject,Homework
+from .models import Student, Mark,Subject,Homework,Leave,Teacher
 
 class MarkSerializer(serializers.ModelSerializer):
     subject_name = serializers.CharField(source='subject.name', read_only=True)
@@ -37,3 +37,13 @@ class HomeworkSerializer(serializers.ModelSerializer):
     class Meta:
        model = Homework
        fields = '__all__'
+       
+class LeaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Leave
+        fields = '__all__'
+        
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = '__all__'

@@ -1,13 +1,40 @@
 from django.shortcuts import render,HttpResponse,redirect,get_object_or_404
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate,login
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from rest_framework import status
 import json
 from django.contrib import messages
-from .models import CustomUser,Student,Mark,Subject,Homework
+from .models import CustomUser,Student,Mark,Subject,Homework,Leave, Teacher
 from rest_framework import viewsets
-from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer,HomeworkSerializer
+from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer,HomeworkSerializer,LeaveSerializer, TeacherSerializer
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import logout
+
+
+# @csrf_exempt
+# def login_view(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         username = data.get('username')
+#         password = data.get('password')
+#         user = authenticate(request, username=username, password=password)
+#         if user is not None:
+#             login(request, user)  # Uses session-based login
+#             return JsonResponse({
+#                 'success': True,
+#                 'role': user.groups.first().name if user.groups.exists() else 'user'
+#             })
+#         else:
+#             return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
+        
+# @csrf_exempt
+# def logout_view(request):
+#     logout(request)
+#     return JsonResponse({'success': True})
 
 
 # API to get and delete users in admin page
@@ -47,21 +74,18 @@ def register(request):
 
 @api_view(["POST"])
 def login(request):
-    data = json.loads(request.body)
-    username = data.get("username")
-    password = data.get("password")
-    role = data.get("role")
- 
+    username = request.data.get("username")
+    password = request.data.get("password")
+    role = request.data.get("role")
+    
     user = authenticate(username=username, password=password)
     if user is None:
         return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
     
     if role and user.role != role:
-        
         return Response({"error": "Access denied: incorrect role"}, status=status.HTTP_403_FORBIDDEN)
     
     return Response({"message": "Login successful", "username": user.username, "role": user.role}, status=status.HTTP_200_OK)
-
 
 
  #assign mark for indivisual subjects
@@ -225,3 +249,12 @@ class SubjectViewSet(viewsets.ModelViewSet):
 class HomeworkViewSet(viewsets.ModelViewSet):
     queryset = Homework.objects.all()
     serializer_class = HomeworkSerializer
+    
+class LeaveViewSet(viewsets.ModelViewSet):
+    queryset = Leave.objects.all()
+    serializer_class = LeaveSerializer
+    
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+    
