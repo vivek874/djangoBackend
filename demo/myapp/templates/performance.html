@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Performance Prediction</title>
+</head>
+<body>
+    <h1>Grade 1 A - Performance Prediction</h1>
+
+    <h2>Predicted Score</h2>
+    <p>{{ predicted_score }}</p>
+
+    <h3>Model Coefficients:</h3>
+    <ul>
+        {% for coef in coefficients %}
+            <li>{{ coef }}</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Model Intercept:</h3>
+    <p>{{ intercept }}</p>
+
+    <h3>Students:</h3>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>Section</th>
+            <th>Attendance</th>
+            <th>Nepali Aggregate</th>
+        </tr>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.username }}</td>
+            <td>{{ student.grade }}</td>
+            <td>{{ student.section }}</td>
+            <td>{{ student.attendance }}</td>
+            <td>{{ student.nepali }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

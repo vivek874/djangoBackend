@@ -9,32 +9,23 @@ from .models import CustomUser,Student,Mark,Subject,Homework,Leave, Teacher
 from rest_framework import viewsets
 from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer,HomeworkSerializer,LeaveSerializer, TeacherSerializer
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
 
 
-# @csrf_exempt
-# def login_view(request):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
-#         username = data.get('username')
-#         password = data.get('password')
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request, user)  # Uses session-based login
-#             return JsonResponse({
-#                 'success': True,
-#                 'role': user.groups.first().name if user.groups.exists() else 'user'
-#             })
-#         else:
-#             return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
-        
-# @csrf_exempt
-# def logout_view(request):
-#     logout(request)
-#     return JsonResponse({'success': True})
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_current_user(request):
+    user = request.user
+    return Response({
+        'username': user.username,
+        'role': user.role  # assuming you have a `role` field in your CustomUser model
+    })
 
 
 # API to get and delete users in admin page
@@ -180,6 +171,7 @@ def assign_homework(request):
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
     @action(detail=True, methods=['get'])
     def marks(self, request, pk=None):
@@ -241,20 +233,78 @@ class StudentViewSet(viewsets.ModelViewSet):
 class MarkViewSet(viewsets.ModelViewSet):
     queryset = Mark.objects.all()
     serializer_class = MarkSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
 class HomeworkViewSet(viewsets.ModelViewSet):
     queryset = Homework.objects.all()
     serializer_class = HomeworkSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
 class LeaveViewSet(viewsets.ModelViewSet):
     queryset = Leave.objects.all()
     serializer_class = LeaveSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        teacher = Teacher.objects.get(user=self.request.user)
+        serializer.save(teacher=teacher)
     
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     
+
+
+# Student performance regression analysis view
+from sklearn.linear_model import LinearRegression
+from .utils.analysis import prepare_regression_data
+from django.views.decorators.http import require_GET
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def student_performance_view(request):
+    try:
+        # Get filter and feature parameters from query
+        subject_name = request.query_params.get("subject_name")
+        grade = request.query_params.get("grade")
+        section = request.query_params.get("section")
+        x_fields = request.query_params.getlist("x_fields") or ["attendance"]
+        y_field = request.query_params.get("y_field") or "aggregate"
+
+        if grade is not None:
+            grade = int(grade)
+
+        # Prepare the data
+        X, y, df = prepare_regression_data(
+            x_fields=x_fields,
+            y_field=y_field,
+            subject_name=subject_name,
+            grade=grade,
+            section=section
+        )
+
+        if X.empty or y.empty:
+            return Response({"error": "No data available for regression."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Train the regression model
+        model = LinearRegression()
+        model.fit(X, y)
+
+        # Make predictions and return them with input data
+        df = df.copy()
+        df["predicted"] = model.predict(X)
+
+        # Build result fields dynamically based on x_fields and y_field
+        fields_to_return = ["student_id", "name", "subject_name"] + x_fields + [y_field, "predicted"]
+        result = df[fields_to_return].to_dict(orient="records")
+
+        return Response({"performance": result}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
