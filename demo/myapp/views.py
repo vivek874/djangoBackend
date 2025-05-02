@@ -251,7 +251,9 @@ class LeaveViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        teacher = Teacher.objects.get(user=self.request.user)
+        teacher, _ = Teacher.objects.get_or_create(user=self.request.user, defaults={
+            "subject": "General"
+        })
         serializer.save(teacher=teacher)
     
 class TeacherViewSet(viewsets.ModelViewSet):
