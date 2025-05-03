@@ -264,49 +264,57 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
 
 # Student performance regression analysis view
-from sklearn.linear_model import LinearRegression
-from .utils.analysis import prepare_regression_data
+import joblib
+from myapp.utils.analysis import prepare_regression_data  # Adjust if your utils file has a different path
 from django.views.decorators.http import require_GET
 
+# This function uses a trained regression model to predict student performance and display the results in a rendered HTML template.
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def student_performance_view(request):
-    try:
-        # Get filter and feature parameters from query
-        subject_name = request.query_params.get("subject_name")
-        grade = request.query_params.get("grade")
-        section = request.query_params.get("section")
-        x_fields = request.query_params.getlist("x_fields") or ["attendance"]
-        y_field = request.query_params.get("y_field") or "aggregate"
+    # Load the trained model
+    model = joblib.load('trained_model.pkl')
 
-        if grade is not None:
-            grade = int(grade)
+    # Prepare data
+    x, _, merged_df = prepare_regression_data()
 
-        # Prepare the data
-        X, y, df = prepare_regression_data(
+    # Make predictions
+    predictions = model.predict(x)
+
+    # Add predictions to the DataFrame
+    merged_df['predicted_score'] = predictions
+
+    # Render the results
+    return render(request, 'your_template.html', {'data': merged_df.to_dict(orient='records')})
+
+
+from django.shortcuts import render
+from myapp.utils.train_model import train_and_save_model  # import your training function
+
+
+# passes parameters in the train_model.html
+def train_model_view(request):
+    if request.method == 'POST':
+        x_fields = request.POST.getlist('x_fields')  # multiple input fields with same name
+        y_field = request.POST.get('y_field')
+        subject_name = request.POST.get('subject_name')
+        grade = int(request.POST.get('grade'))
+        section = request.POST.get('section')
+
+        intercept, coefficients, predictions, actuals = train_and_save_model(
             x_fields=x_fields,
             y_field=y_field,
             subject_name=subject_name,
             grade=grade,
             section=section
         )
+        return render(request, 'train_result.html', {
+            'message': 'Model trained successfully!',
+            'intercept': intercept,
+            'coefficients': coefficients,
+            'predictions': predictions,
+            'actuals': actuals,
+           
+        })
 
-        if X.empty or y.empty:
-            return Response({"error": "No data available for regression."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Train the regression model
-        model = LinearRegression()
-        model.fit(X, y)
-
-        # Make predictions and return them with input data
-        df = df.copy()
-        df["predicted"] = model.predict(X)
-
-        # Build result fields dynamically based on x_fields and y_field
-        fields_to_return = ["student_id", "name", "subject_name"] + x_fields + [y_field, "predicted"]
-        result = df[fields_to_return].to_dict(orient="records")
-
-        return Response({"performance": result}, status=status.HTTP_200_OK)
-
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return render(request, 'train_model.html')

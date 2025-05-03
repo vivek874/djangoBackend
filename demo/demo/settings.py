@@ -79,7 +79,7 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Set to 15 minutes or adjust as necessary
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=300),  # Set to 15 minutes or adjust as necessary
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Set to 1 day or adjust as necessary
     # 'SIGNING_KEY': '0au@g*-@w3d8%i^94o!u4o)0b-dvynr@p+)3--ok%ivm#u!)gn',            # Make sure the secret key is correctly set
 }

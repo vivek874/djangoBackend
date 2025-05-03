@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Training Result</title>
+</head>
+<body>
+    <h2>{{ message }}</h2>
+
+    {% if intercept %}
+        <p><strong>Intercept:</strong> {{ intercept }}</p>
+    {% endif %}
+    {% if coefficients %}
+        <h3>Coefficients:</h3>
+        <ul>
+            {% for field, coef in coefficients.items %}
+                <li>{{ field }}: {{ coef }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if predictions %}
+        <h3>Sample Predictions:</h3>
+        <ul>
+            {% for prediction in predictions %}
+                <li>{{ prediction }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if actuals %}
+        <h3>Actual Values:</h3>
+        <ul>
+            {% for actual in actuals %}
+                <li>{{ actual }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+   
+    {% if r2 %}
+        <h3>R² Score:</h3>
+        <p>{{ r2 }}</p>
+    {% endif %}
+
+    <a href="{% url 'train-model' %}">Train Again</a>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.linear_model import LinearRegression
 from myapp.models import Student, Mark,Subject
 
 
@@ -48,5 +49,23 @@ def prepare_regression_data(
     # Prepare features (X) and target (y)
     X = merged_df[x_fields]
     y = merged_df[y_field]
+  
+
+    # Normalize fields to bring them on comparable scales
+    normalization_factors = {
+        'attendance': 200.0,
+        'test_score': 15.0,
+        'homework_score': 10.0,
+        'final_score': 75.0,
+        'aggregate': 100.0,
+    }
+
+    for col in X.columns:
+        if col in normalization_factors:
+            X.loc[:, col] = X[col] / normalization_factors[col]
+
+    if y.name in normalization_factors:
+        y = y / normalization_factors[y.name]
 
     return X, y, merged_df
+

@@ -34,7 +34,7 @@ class Mark(models.Model):
     aggregate = models.FloatField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.aggregate = (self.test_score + self.homework_score + self.final_score) / 3
+        self.aggregate = (self.test_score + self.homework_score + self.final_score) 
         super().save(*args, **kwargs)
 
     def __str__(self):

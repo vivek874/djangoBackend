@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Train Model</title>
+</head>
+<body>
+    <h2>Train Regression Model</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Subject Name:</label><br>
+        <input type="text" name="subject_name"><br><br>
+
+        <label>Grade:</label><br>
+        <input type="number" name="grade"><br><br>
+
+        <label>Section:</label><br>
+        <input type="text" name="section"><br><br>
+
+        <label>Y Field (Target):</label><br>
+        <input type="text" name="y_field"><br><br>
+
+        <label>X Fields (Features):</label><br>
+        <input type="text" name="x_fields"><br>
+        <input type="text" name="x_fields"><br>
+        <!-- Add more fields as needed -->
+
+        <br><button type="submit">Train</button>
+    </form>
+</body>
+</html>

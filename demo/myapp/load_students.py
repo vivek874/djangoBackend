@@ -24,14 +24,12 @@ def load_students_from_csv(csv_file_path):
                 grade=int(row['grade']),
                 section=row['section'],
                 attendance=float(row['attendance']),
-                test_score=float(row['test_score']),
-                homework_score=float(row['homework_score']),
-                final_exam=float(row['final_exam']),
-                aggregate = float(row['aggregate']),
+               
+                final_aggregate = float(row['aggregate']),
               
             )
     print("Successfully imported student data from:", csv_file_path)
 
 if __name__ == '__main__':
-    csv_path = os.path.expanduser("/Users/vivekdahal/Downloads/dataset.csv")  
+    csv_path = os.path.expanduser("/Users/vivekdahal/Downloads/added_dataset.csv")  
     load_students_from_csv(csv_path)

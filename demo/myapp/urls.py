@@ -18,4 +18,6 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/user/', views.get_current_user, name='get-current-user'),
+    path('train-model/', views.train_model_view, name='train-model'),
+
 ]
