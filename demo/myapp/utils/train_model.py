@@ -4,13 +4,13 @@ from myapp.utils.analysis import prepare_regression_data
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import  r2_score
 
-def train_and_save_model(x_fields, y_field, subject_name, grade, section):
+def train_and_save_model(x_fields, y_field, subject_name, grade):
     X, y, _ = prepare_regression_data(
         x_fields=x_fields,
         y_field=y_field,
         subject_name=subject_name,
         grade=grade,
-        section=section
+       
     )
 
     model = LinearRegression()
@@ -21,7 +21,7 @@ def train_and_save_model(x_fields, y_field, subject_name, grade, section):
     intercept = model.intercept_
     coefficients = {field: coef for field, coef in zip(x_fields, model.coef_)}
 
-    # Optional: make predictions and show a sample
+   
     predictions = model.predict(X)
     actuals = y.tolist()
 

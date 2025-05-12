@@ -15,7 +15,7 @@ from django.contrib.auth import logout
 
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
 
 @api_view(['GET'])
@@ -263,7 +263,7 @@ class TeacherViewSet(viewsets.ModelViewSet):
     
 
 
-# Student performance regression analysis view
+# Student performance 
 import joblib
 from myapp.utils.analysis import prepare_regression_data  # Adjust if your utils file has a different path
 from django.views.decorators.http import require_GET
@@ -299,22 +299,75 @@ def train_model_view(request):
         y_field = request.POST.get('y_field')
         subject_name = request.POST.get('subject_name')
         grade = int(request.POST.get('grade'))
-        section = request.POST.get('section')
+       
 
         intercept, coefficients, predictions, actuals = train_and_save_model(
             x_fields=x_fields,
             y_field=y_field,
             subject_name=subject_name,
             grade=grade,
-            section=section
+           
         )
+
+        from sklearn.metrics import r2_score
+        from .models import ModelTraining
+
+        # Calculate R² score
+        r2 = r2_score(actuals, predictions)
+
+        # Save the training results to the database
+        ModelTraining.objects.create(
+            subject_name=subject_name,
+            grade=grade,
+          
+            intercept=intercept,
+            coefficients=dict(zip(x_fields, coefficients)),
+            r2_score=r2
+        )
+
         return render(request, 'train_result.html', {
             'message': 'Model trained successfully!',
             'intercept': intercept,
             'coefficients': coefficients,
             'predictions': predictions,
             'actuals': actuals,
-           
+            'r2': r2
         })
 
     return render(request, 'train_model.html')
+
+
+from .models import ModelTraining
+
+# View to display model training history
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def training_history_view(request):
+    trainings = ModelTraining.objects.all().order_by('-date_trained')
+    history = []
+    for training in trainings:
+        history.append({
+            'date_trained': training.date_trained.strftime("%Y-%m-%d %H:%M:%S"),
+            'subject_name': training.subject_name,
+            'grade': training.grade,
+            'intercept': training.intercept,
+            'coefficients': training.coefficients,
+            'r2_score': training.r2_score,
+            
+        })
+    return Response({'training_history': history}, status=status.HTTP_200_OK)
+
+from myapp.utils.predict import predict  # Assuming your predict function is here
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def predict_view(request):
+    try:
+        data = json.loads(request.body)
+        prediction = predict(data)
+        return Response({'prediction': prediction}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

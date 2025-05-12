@@ -68,3 +68,18 @@ class Leave(models.Model):
         return self.message[:50]  # Show first 50 chars in admin
     
     
+
+
+# Model to store training metadata and results for subject/grade/section models
+class ModelTraining(models.Model):
+    date_trained = models.DateTimeField(auto_now_add=True)
+    subject_name = models.CharField(max_length=100)
+    grade = models.IntegerField()
+    section = models.CharField(max_length=1)
+    intercept = models.FloatField()
+    coefficients = models.JSONField()
+    r2_score = models.FloatField()
+
+
+    def __str__(self):
+        return f"Model trained for {self.subject_name} - Grade {self.grade}{self.section} on {self.date_trained.strftime('%Y-%m-%d %H:%M')}"

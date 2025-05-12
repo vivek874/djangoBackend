@@ -1,0 +1,39 @@
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    <title>Training History</title>
+</head>
+<body>
+    <h2>Model Training History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>R² Score</th>
+                <th>Intercept</th>
+                <th>Coefficients</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for training in trainings %}
+            <tr>
+                <td>{{ training.date }}</td>
+                <td>{{ training.r2 }}</td>
+                <td>{{ training.intercept }}</td>
+                <td>
+                    <ul>
+                        {% for field, coef in training.coefficients.items %}
+                            <li>{{ field }}: {{ coef }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{% url 'view-training-details' training.id %}">View Details</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html> {% endcomment %}

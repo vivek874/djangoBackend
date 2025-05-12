@@ -13,16 +13,27 @@
         <label>Grade:</label><br>
         <input type="number" name="grade"><br><br>
 
-        <label>Section:</label><br>
-        <input type="text" name="section"><br><br>
+       
 
         <label>Y Field (Target):</label><br>
         <input type="text" name="y_field"><br><br>
 
         <label>X Fields (Features):</label><br>
-        <input type="text" name="x_fields"><br>
-        <input type="text" name="x_fields"><br>
-        <!-- Add more fields as needed -->
+        <div id="x-fields-container">
+            <input type="text" name="x_fields"><br>
+        </div>
+        <button type="button" onclick="addField()">Add Field</button><br><br>
+
+        <script>
+            function addField() {
+                const container = document.getElementById("x-fields-container");
+                const input = document.createElement("input");
+                input.type = "text";
+                input.name = "x_fields";
+                container.appendChild(input);
+                container.appendChild(document.createElement("br"));
+            }
+        </script>
 
         <br><button type="submit">Train</button>
     </form>
