@@ -18,6 +18,7 @@ class Student(models.Model):
     section = models.CharField(max_length=1)  
     attendance = models.FloatField()
     final_aggregate = models.FloatField()
+    academic_year = models.CharField(max_length=10, default="2025")
     
 class Subject(models.Model):
     name = models.CharField(max_length=100)
@@ -79,6 +80,7 @@ class ModelTraining(models.Model):
     intercept = models.FloatField()
     coefficients = models.JSONField()
     r2_score = models.FloatField()
+    model_path = models.CharField(max_length=255, blank=True, null=True)
 
 
     def __str__(self):

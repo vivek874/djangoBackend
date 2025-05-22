@@ -22,9 +22,9 @@ class Command(BaseCommand):
     help = 'Fill student data with sample marks and attendance'
 
     def handle(self, *args, **kwargs):
-        subjects = ['Nepali', 'English', 'Math', 'Science']
+        subjects = ['Nepali', 'English', 'Math', 'Science','Health','Computer','Social']
 
-        for student in Student.objects.all():
+        for student in Student.objects.filter(academic_year="2024"):
             # Assign random attendance between 100 and 200 days
             student.attendance = random.randint(100, 200)
             student.save()

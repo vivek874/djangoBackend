@@ -6,7 +6,7 @@ from myapp.models import Student, Mark,Subject
 
 def load_and_merge_data():
     # Load student data
-    s_qs = Student.objects.all().values('id','name', 'grade', 'section', 'attendance','final_aggregate')
+    s_qs = Student.objects.filter(academic_year='2024').values('academic_year', 'id','name', 'grade', 'section', 'attendance','final_aggregate')
     s_df = pd.DataFrame(list(s_qs))
 
     # Load mark data

@@ -201,6 +201,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Student.objects.all()
         grade = self.request.query_params.get('grade')
+        academic_year = self.request.query_params.get('academic_year')
         section = self.request.query_params.get('section')
         subject_name = self.request.query_params.get('subject')
         test_score=self.request.query_params.get('test_score')
@@ -209,9 +210,11 @@ class StudentViewSet(viewsets.ModelViewSet):
 
         if grade:
             queryset = queryset.filter(grade=grade)
+        if academic_year:
+         queryset = queryset.filter(academic_year=academic_year)
         if section:
             queryset = queryset.filter(section=section)
-        if subject_name:
+        if subject_name: 
             queryset = queryset.filter(marks__subject__name=subject_name).distinct()
         if test_score :
              queryset = queryset.filter(test_score=test_score)
@@ -299,14 +302,13 @@ def train_model_view(request):
         y_field = request.POST.get('y_field')
         subject_name = request.POST.get('subject_name')
         grade = int(request.POST.get('grade'))
-       
 
-        intercept, coefficients, predictions, actuals = train_and_save_model(
+        # Capture model_path in return values
+        intercept, coefficients, predictions, actuals, model_path = train_and_save_model(
             x_fields=x_fields,
             y_field=y_field,
             subject_name=subject_name,
             grade=grade,
-           
         )
 
         from sklearn.metrics import r2_score
@@ -315,14 +317,14 @@ def train_model_view(request):
         # Calculate R² score
         r2 = r2_score(actuals, predictions)
 
-        # Save the training results to the database
+        # Save the training results to the database, including model_path
         ModelTraining.objects.create(
             subject_name=subject_name,
             grade=grade,
-          
             intercept=intercept,
             coefficients=dict(zip(x_fields, coefficients)),
-            r2_score=r2
+            r2_score=r2,
+            model_path=model_path
         )
 
         return render(request, 'train_result.html', {
@@ -357,9 +359,15 @@ def training_history_view(request):
         })
     return Response({'training_history': history}, status=status.HTTP_200_OK)
 
-from myapp.utils.predict import predict  # Assuming your predict function is here
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 import json
+import os
+import pandas as pd
+import joblib
+
 
 @csrf_exempt
 @api_view(["POST"])
@@ -367,7 +375,62 @@ import json
 def predict_view(request):
     try:
         data = json.loads(request.body)
-        prediction = predict(data)
-        return Response({'prediction': prediction}, status=status.HTTP_200_OK)
+
+        subject_name = data.get('subject_name')
+        grade = data.get('grade')
+        x_fields = data.get('x_fields')
+        y_field = data.get('y_field')
+        academic_year = data.get("academic_year")
+
+        if not all([subject_name, grade, x_fields, y_field,academic_year]):
+            return Response({'error': 'Missing required fields'}, status=400)
+
+        model_path = f'models/model_{subject_name}_grade{grade}_{y_field}_{x_fields}.pkl'
+        if not os.path.exists(model_path):
+            return Response({'error': f'Model not found at {model_path}'}, status=404)
+
+        model = joblib.load(model_path)
+
+        # Query all students in the grade
+        academic_year = data.get('academic_year')
+        students = Student.objects.filter(grade=grade, academic_year=academic_year)
+
+        rows = []
+
+        for student in students:
+            try:
+                mark = Mark.objects.get(student=student, subject__name=subject_name)
+                row = {}
+                for field in x_fields:
+                    row[field] = getattr(mark, field, 0)
+                row['student_id'] = student.id
+                row['student_name'] = student.name
+                rows.append(row)
+            except Mark.DoesNotExist:
+                continue
+
+        if not rows:
+            return Response({'error': 'No marks found for students'}, status=404)
+
+        df = pd.DataFrame(rows)
+
+        normalization = {
+            'attendance': 200,
+            'test_score': 15,
+            'homework_score': 10,
+            'final_score': 75,
+        }
+
+        for field in x_fields:
+            if field in normalization:
+                df[field] = df[field] / normalization[field]
+
+        predictions = model.predict(df[x_fields])
+        df['predicted_' + y_field] = predictions
+
+        result = df[['student_id', 'student_name', 'predicted_' + y_field]].to_dict(orient='records')
+
+        return Response({'predictions': result}, status=200)
+
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': str(e)}, status=400)

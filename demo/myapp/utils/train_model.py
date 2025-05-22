@@ -3,6 +3,7 @@ import joblib
 from myapp.utils.analysis import prepare_regression_data
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import  r2_score
+import os
 
 def train_and_save_model(x_fields, y_field, subject_name, grade):
     X, y, _ = prepare_regression_data(
@@ -15,8 +16,6 @@ def train_and_save_model(x_fields, y_field, subject_name, grade):
 
     model = LinearRegression()
     model.fit(X, y)
-    joblib.dump(model, 'trained_model.pkl')
-    print("Model trained and saved successfully.")
 
     intercept = model.intercept_
     coefficients = {field: coef for field, coef in zip(x_fields, model.coef_)}
@@ -28,11 +27,24 @@ def train_and_save_model(x_fields, y_field, subject_name, grade):
   
     r2 = r2_score(y, predictions)
 
+    # Ensure models directory exists
+    os.makedirs('models', exist_ok=True)
+
+    # Generate a unique filename for this model
+    model_filename = f"model_{subject_name}_grade{grade}_{y_field}_{x_fields}.pkl"
+    model_path = os.path.join("models", model_filename)
+
+    if r2 >= 0.5:
+        joblib.dump(model, model_path)
+        print("Model trained and saved successfully.")
+    else:
+        print("Model not saved due to low R² score.")
+
     print("Sample predictions:", predictions[:5])
     print("Actual values:", y[:5].tolist())
   
     print("R² Score:", r2)
-    return intercept, coefficients, predictions.tolist(), actuals
+    return intercept, coefficients, predictions.tolist(), actuals, model_path
 
 if __name__ == '__main__':
     train_and_save_model()

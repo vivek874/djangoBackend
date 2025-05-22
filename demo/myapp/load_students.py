@@ -26,10 +26,11 @@ def load_students_from_csv(csv_file_path):
                 attendance=float(row['attendance']),
                
                 final_aggregate = float(row['aggregate']),
+                academic_year="2024",
               
             )
     print("Successfully imported student data from:", csv_file_path)
 
 if __name__ == '__main__':
-    csv_path = os.path.expanduser("/Users/vivekdahal/Downloads/added_dataset.csv")  
+    csv_path = os.path.expanduser("/Users/vivekdahal/Downloads/students_training_updated.csv")  
     load_students_from_csv(csv_path)
