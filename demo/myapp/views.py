@@ -385,7 +385,8 @@ def predict_view(request):
         if not all([subject_name, grade, x_fields, y_field,academic_year]):
             return Response({'error': 'Missing required fields'}, status=400)
 
-        model_path = f'models/model_{subject_name}_grade{grade}_{y_field}_{x_fields}.pkl'
+        x_field_str = "_".join(x_fields)
+        model_path = f'models/model_{subject_name}_grade{grade}_{y_field}_{x_field_str}.pkl'
         if not os.path.exists(model_path):
             return Response({'error': f'Model not found at {model_path}'}, status=404)
 
