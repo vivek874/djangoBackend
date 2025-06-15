@@ -35,7 +35,7 @@ def train_and_save_model(x_fields, y_field, subject_name, grade):
     model_filename = f"model_{subject_name}_grade{grade}_{y_field}_{x_field_str}.pkl"
     model_path = os.path.join("models", model_filename)
 
-    if r2 >= 0.5:
+    if r2 >= 0.4:
         joblib.dump(model, model_path)
         print("Model trained and saved successfully.")
     else:

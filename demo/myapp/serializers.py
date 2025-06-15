@@ -39,10 +39,12 @@ class HomeworkSerializer(serializers.ModelSerializer):
        fields = '__all__'
        
 class LeaveSerializer(serializers.ModelSerializer):
+    teacher = serializers.CharField(source='teacher.user', read_only=True)
+
     class Meta:
         model = Leave
         fields = '__all__'
-        read_only_fields = ['teacher', 'created_at']
+        read_only_fields = ['teacher','created_at']
         
 class TeacherSerializer(serializers.ModelSerializer):
     class Meta:

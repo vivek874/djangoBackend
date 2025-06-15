@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse,redirect,get_object_or_404
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,10 +8,8 @@ from django.contrib import messages
 from .models import CustomUser,Student,Mark,Subject,Homework,Leave, Teacher
 from rest_framework import viewsets
 from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer,HomeworkSerializer,LeaveSerializer, TeacherSerializer
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from django.http import JsonResponse
-from django.contrib.auth import logout
+
 
 
 from rest_framework.decorators import api_view, permission_classes
@@ -258,6 +256,19 @@ class LeaveViewSet(viewsets.ModelViewSet):
             "subject": "General"
         })
         serializer.save(teacher=teacher)
+        
+    def get_queryset(self):
+        user = self.request.user
+        if user.role=='admin':
+            return Leave.objects.all()
+        
+        if user.role == 'teacher':
+            
+         return Leave.objects.filter(teacher__user=self.request.user)
+        
+        
+        
+        
     
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
@@ -429,7 +440,8 @@ def predict_view(request):
         predictions = model.predict(df[x_fields])
         df['predicted_' + y_field] = predictions
 
-        result = df[['student_id', 'student_name', 'predicted_' + y_field]].to_dict(orient='records')
+        # Ensure x_fields are included in the result columns
+        result = df[['student_id', 'student_name'] + x_fields + ['predicted_' + y_field]].to_dict(orient='records')
 
         return Response({'predictions': result}, status=200)
 
