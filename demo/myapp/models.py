@@ -64,6 +64,11 @@ class Leave(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name="leaves")
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length =10,
+        choices=[('pending','Pending'),('approved','Approved'),('declined','Declined')],
+        default='pending'
+    )
 
     def __str__(self):
         return self.message[:50]  # Show first 50 chars in admin

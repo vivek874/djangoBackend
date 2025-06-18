@@ -259,6 +259,10 @@ class LeaveViewSet(viewsets.ModelViewSet):
         
     def get_queryset(self):
         user = self.request.user
+        
+        if not user.is_authenticated:
+            return Leave.objects.all()
+        
         if user.role=='admin':
             return Leave.objects.all()
         
@@ -267,6 +271,19 @@ class LeaveViewSet(viewsets.ModelViewSet):
          return Leave.objects.filter(teacher__user=self.request.user)
         
         
+    @action(detail=True , methods=['patch'])
+    def update_status(self, request,pk=None):
+        leave = self.get_object()
+        status_value = request.data.get('status')
+        
+        if status_value not in ['approved','declined']:
+            return Response({'error': 'invalid status'},status=400)
+        
+        leave.status = status_value
+        leave.save()
+        return Response ({'message':'leave{status_value}'},status = 200)
+         
+            
         
         
     
