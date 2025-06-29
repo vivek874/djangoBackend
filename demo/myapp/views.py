@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 import json
 from django.contrib import messages
-from .models import CustomUser,Student,Mark,Subject,Homework,Leave, Teacher
+from .models import CustomUser,Student,Mark,Subject,Homework,Leave, Teacher, DailyRoutine
 from rest_framework import viewsets
-from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer,HomeworkSerializer,LeaveSerializer, TeacherSerializer
+from .serializers import StudentSerializer,MarkSerializer,SubjectSerializer,HomeworkSerializer,LeaveSerializer, TeacherSerializer, DailyRoutineSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
@@ -284,13 +284,44 @@ class LeaveViewSet(viewsets.ModelViewSet):
         return Response ({'message':'leave{status_value}'},status = 200)
          
             
-        
-        
-    
+       
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    
+class RoutineViewSet(viewsets.ModelViewSet):
+    queryset = DailyRoutine.objects.all()
+    serializer_class = DailyRoutineSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def create(self, request, *args, **kwargs):
+        grade = request.data.get('grade')
+        routine_file = request.FILES.get('routine')
+
+        if not grade or not routine_file:
+            return Response({"error": "Grade and routine image are required"}, status=400)
+
+        existing = DailyRoutine.objects.filter(grade=grade).first()
+
+        if existing:
+            existing.routine = routine_file
+            existing.save()
+            return Response(DailyRoutineSerializer(existing).data, status=200)
+        else:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data, status=201)
+
+    def get_queryset(self):
+        queryset = DailyRoutine.objects.all()
+        grade = self.request.query_params.get('grade')
+        if grade:
+            queryset = queryset.filter(grade=grade)
+        return queryset
+
+            
     
 
 

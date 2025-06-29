@@ -73,6 +73,10 @@ class Leave(models.Model):
     def __str__(self):
         return self.message[:50]  # Show first 50 chars in admin
     
+class DailyRoutine(models.Model):
+    grade = models.CharField(max_length=10)
+    routine =   models.ImageField(upload_to='daily_routines/')
+    
     
 
 
