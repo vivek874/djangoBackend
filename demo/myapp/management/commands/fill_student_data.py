@@ -5,19 +5,19 @@ import django
 import sys
 import random
 
-# Step 1: Add the project root to sys.path
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Step 2: Set the Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demo.settings')  # use your project name here
 
-# Step 3: Setup Django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demo.settings')  
+
+
 django.setup()
 
-# Step 4: Now import your models
+
 from myapp.models import Student, Subject, Mark
 
-# (rest of your script remains the same)
+
 class Command(BaseCommand):
     help = 'Fill student data with sample marks and attendance'
 
@@ -32,7 +32,7 @@ class Command(BaseCommand):
             for subject_name in subjects:
                 subject, _ = Subject.objects.get_or_create(name=subject_name)
 
-                # Use attendance to influence scores: higher attendance = higher marks
+                # Using attendance to influence scores
                 attendance_factor = student.attendance / 200.0  # Normalize to 0–1
 
                 # Homework score influenced by attendance

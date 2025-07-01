@@ -27,10 +27,10 @@ def train_and_save_model(x_fields, y_field, subject_name, grade):
   
     r2 = r2_score(y, predictions)
 
-    # Ensure models directory exists
+
     os.makedirs('models', exist_ok=True)
 
-    # Generate a unique filename for this model
+    
     x_field_str = "_".join(x_fields)
     model_filename = f"model_{subject_name}_grade{grade}_{y_field}_{x_field_str}.pkl"
     model_path = os.path.join("models", model_filename)
