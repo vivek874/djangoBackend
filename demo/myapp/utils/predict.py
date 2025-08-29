@@ -6,7 +6,7 @@ def load_model(path):
     return joblib.load(path)
 
 def predict(input_dict, subject_name, grade, y_field,x_fields):
-    # Construct model path
+    
     model_path = f'models/model_{subject_name}_grade{grade}_{y_field}_{x_fields}.pkl'
     
     if not os.path.exists(model_path):

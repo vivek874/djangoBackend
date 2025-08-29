@@ -1,4 +1,3 @@
-# train_model.py
 import joblib
 from myapp.utils.analysis import prepare_regression_data
 from sklearn.linear_model import LinearRegression
