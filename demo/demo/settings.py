@@ -62,8 +62,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-     "https://edumanagerx.vercel.app/"
-    "http://localhost:5173",
+     'https://djangobackend-8bb8.onrender.com',
+     "https://edumanagerx.vercel.app",
+    # "http://localhost:5173",
 ]
 
 # CORS_ALLOW_CREDENTIALS= True
