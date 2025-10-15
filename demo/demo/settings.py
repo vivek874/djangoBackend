@@ -52,7 +52,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = "myapp.CustomUser" 
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Ensure this is the first middleware
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -63,9 +63,8 @@ MIDDLEWARE = [
     
 ]
 CORS_ALLOWED_ORIGINS = [
-     'https://djangobackend-8bb8.onrender.com',
      "https://edumanagerx.vercel.app",
-    # "http://localhost:5173",
+     "https://djangobackend-8bb8.onrender.com",
 ]
 CORS_ALLOW_HEADERS = [
     'authorization',
@@ -75,9 +74,11 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
-CORS_ALLOW_CREDENTIALS= True
-# CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
-# # CSRF_COOKIE_SAMESITE = 'None'
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = ['https://edumanagerx.vercel.app']
+
+# Note: Restart backend after making changes to CORS and CSRF settings
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
