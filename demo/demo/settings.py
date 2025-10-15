@@ -75,7 +75,7 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ['https://edumanagerx.vercel.app']
+
 
 # Note: Restart backend after making changes to CORS and CSRF settings
 
