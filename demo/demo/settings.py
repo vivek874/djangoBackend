@@ -67,7 +67,14 @@ CORS_ALLOWED_ORIGINS = [
      "https://edumanagerx.vercel.app",
     # "http://localhost:5173",
 ]
-
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'accept',
+    'origin',
+    'x-csrftoken',
+    'x-requested-with',
+]
 CORS_ALLOW_CREDENTIALS= True
 # CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
 # # CSRF_COOKIE_SAMESITE = 'None'
