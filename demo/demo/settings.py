@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 CORS_ALLOWED_ORIGINS = [
-    
+     "https://edumanagerx.vercel.app/"
     "http://localhost:5173",
 ]
 
