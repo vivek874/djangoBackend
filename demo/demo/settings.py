@@ -12,7 +12,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://djangobackend-8bb8.onrender.com']
+ALLOWED_HOSTS = ['djangobackend-8bb8.onrender.com']
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -104,12 +104,12 @@ WSGI_APPLICATION = "demo.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if os.environ.get('DATABASE_URL'):
-    DATABASES = {
-        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
-    }
-else:
-    DATABASES = {
+# if os.environ.get('DATABASE_URL'):
+#     DATABASES = {
+#         'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+#     }
+# else:
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
