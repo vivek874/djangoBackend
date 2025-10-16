@@ -75,7 +75,7 @@ class Leave(models.Model):
     
 class DailyRoutine(models.Model):
     grade = models.CharField(max_length=10)
-    routine =   models.ImageField(upload_to='daily_routines/')
+    routine =   models.FileField(upload_to='daily_routines/')
     
     
 
