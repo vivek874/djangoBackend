@@ -21,5 +21,6 @@ urlpatterns = [
     path('train-model/', views.train_model_view, name='train-model'),
     path('training-history/', views.training_history_view, name='training-history'),
     path('predict/',views.predict_view, name='predict'),
+    path('health/',views.health, name='health')
 
 ]

@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render,HttpResponse,redirect,get_object_or_404
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view,action
@@ -495,3 +496,9 @@ def predict_view(request):
 
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+    
+def health(request):
+    try:
+        return JsonResponse({'active'},status=200)
+    except Exception as e:
+        return JsonResponse({'error'},status=500)
