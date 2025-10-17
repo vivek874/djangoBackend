@@ -499,6 +499,6 @@ def predict_view(request):
     
 def health(request):
     try:
-        return JsonResponse({'active'},status=200)
-    except Exception as e:
-        return JsonResponse({'error'},status=500)
+        return JsonResponse({'status':'ok'},status=200)
+    except Exception:
+        return JsonResponse({'status':'error'},status=500)
